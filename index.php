@@ -1,5 +1,8 @@
 <?php // Versión de prueba 2
 
+echo "VERSION_TEST_01"; 
+exit; // Esto detiene el resto del código para que solo veamos este texto
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -45,5 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $conn->close();
 
 ?>
+
 
 
