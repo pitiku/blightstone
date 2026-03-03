@@ -23,9 +23,6 @@ if (!mysqli_real_connect($conn, $host, $user, $pass, $db, $port, NULL, MYSQLI_CL
 }
 
 // 4. Lógica para Unity
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre = $_POST['nombre'] ?? 'JugadorAnonimo';
-    $puntos = $_POST['puntos'] ?? 0;
 
     $stmt = $conn->prepare("INSERT INTO 0_user (user_name, is_steam_name) VALUES ('ra', 1)");
     //$stmt->bind_param("si", $nombre, $puntos);
@@ -36,9 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "Error en ejecución: " . $stmt->error;
     }
     $stmt->close();
-} else {
-    echo "Servidor activo. Esperando datos de Unity...";
-}
 
 $conn->close();
 ?>
+
