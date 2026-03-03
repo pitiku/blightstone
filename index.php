@@ -13,40 +13,32 @@ $pass = '5ZcNOCkyQA9VGvfL';
 $db   = 'BS';
 $port = 4000;
 
-// 2. TiDB REQUIERE SSL (Seguridad)
-// En Railway/Vercel no necesitas descargar el archivo .pem, 
-// puedes usar la ruta del sistema que ya suelen tener.
+// 3. Conexión con SSL
 $conn = mysqli_init();
+// Usamos la ruta de certificados por defecto de Railway
 mysqli_ssl_set($conn, NULL, NULL, "/etc/ssl/certs/ca-certificates.crt", NULL, NULL);
 
 if (!mysqli_real_connect($conn, $host, $user, $pass, $db, $port, NULL, MYSQLI_CLIENT_SSL)) {
-    die("Error de conexión");
+    die("Error de conexión: " . mysqli_connect_error());
 }
 
-// 3. Recibir datos de Unity (POST)
+// 4. Lógica para Unity
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre = $_POST['nombre'] ?? 'SinNombre';
+    $nombre = $_POST['nombre'] ?? 'JugadorAnonimo';
     $puntos = $_POST['puntos'] ?? 0;
 
-    // 4. Insertar de forma segura
-    $stmt = $conn->prepare("INSERT INTO jugadores (nombre, puntos) VALUES (?, ?)");
-    $stmt->bind_param("si", $nombre, $puntos);
+    $stmt = $conn->prepare("INSERT INTO 0_user (user_name, is_steam_name) VALUES ('ra', 1)");
+    //$stmt->bind_param("si", $nombre, $puntos);
 
     if ($stmt->execute()) {
-        // 5. ¡AQUÍ ESTÁ TU ID! Lo devolvemos a Unity
-        echo $conn->insert_id; 
+        echo $conn->insert_id; // ESTO ES LO QUE RECIBE UNITY
     } else {
-        http_response_code(500);
-        echo "Error al insertar";
+        echo "Error en ejecución: " . $stmt->error;
     }
     $stmt->close();
+} else {
+    echo "Servidor activo. Esperando datos de Unity...";
 }
 
 $conn->close();
-
 ?>
-
-
-
-
-
