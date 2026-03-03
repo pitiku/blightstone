@@ -1,5 +1,9 @@
 <?php
-// 1. Configuración de conexión (Sácalo de TiDB -> Connect)
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// 1. ConfiguraciÃ³n de conexiÃ³n (SÃ¡calo de TiDB -> Connect)
 $host = 'gateway01.tu-region.prod.aws.tidbcloud.com';
 $user = 'tu_usuario.root';
 $pass = 'tu_password';
@@ -13,7 +17,7 @@ $conn = mysqli_init();
 mysqli_ssl_set($conn, NULL, NULL, "/etc/ssl/certs/ca-certificates.crt", NULL, NULL);
 
 if (!mysqli_real_connect($conn, $host, $user, $pass, $db, $port, NULL, MYSQLI_CLIENT_SSL)) {
-    die("Error de conexión");
+    die("Error de conexiÃ³n");
 }
 
 // 3. Recibir datos de Unity (POST)
@@ -26,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("si", $nombre, $puntos);
 
     if ($stmt->execute()) {
-        // 5. ¡AQUÍ ESTÁ TU ID! Lo devolvemos a Unity
+        // 5. Â¡AQUÃ ESTÃ TU ID! Lo devolvemos a Unity
         echo $conn->insert_id; 
     } else {
         http_response_code(500);
@@ -36,4 +40,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $conn->close();
+
 ?>
