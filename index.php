@@ -24,6 +24,8 @@ if (!mysqli_real_connect($conn, $host, $user, $pass, $db, $port, NULL, MYSQLI_CL
 // 4. Lógica para Unity
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['query']))
 {
+    $query = $_POST['query'];
+    
     $stmt = $conn->prepare($query);
     // $stmt = $conn->prepare("INSERT INTO 0_user (user_name, is_steam_name) VALUES ('ra', 1)");
     //$stmt->bind_param("si", $nombre, $puntos);
@@ -47,6 +49,7 @@ else
 
 $conn->close();
 ?>
+
 
 
 
