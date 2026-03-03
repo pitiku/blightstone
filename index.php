@@ -38,8 +38,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')// && !empty($_POST['nombre']))
 
     $stmt->close();
 }
+else
+{
+    // Si entras desde el navegador (GET), solo muestra un mensaje, NO inserta.
+    echo "Servidor listo. Esperando datos por POST desde Unity.";
+}
 
 $conn->close();
 ?>
+
 
 
