@@ -3,11 +3,13 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// mysql --comments -u '2p7TUipr1WHHH3f.root' -h gateway01.eu-central-1.prod.aws.tidbcloud.com -P 4000 -D 'BS' --ssl-mode=VERIFY_IDENTITY --ssl-ca=<CA_PATH> -p'<PASSWORD>'
+    
 // 1. Configuración de conexión (Sácalo de TiDB -> Connect)
-$host = 'gateway01.tu-region.prod.aws.tidbcloud.com';
-$user = 'tu_usuario.root';
-$pass = 'tu_password';
-$db   = 'test';
+$host = 'gateway01.eu-central-1.prod.aws.tidbcloud.com';
+$user = '2p7TUipr1WHHH3f.root';
+$pass = '5ZcNOCkyQA9VGvfL';
+$db   = 'BS';
 $port = 4000;
 
 // 2. TiDB REQUIERE SSL (Seguridad)
@@ -42,3 +44,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $conn->close();
 
 ?>
+
