@@ -3,7 +3,7 @@
 $host = 'gateway01.eu-central-1.prod.aws.tidbcloud.com';
 $user = '2p7TUipr1WHHH3f.root';
 $pass = '5ZcNOCkyQA9VGvfL';
-$db   = 'Rift';
+$db   = 'BS';
 $port = 4000;
 $tabla = 'Z_errors'; // Puedes cambiar esto por cualquier tabla de tu DB
 
@@ -77,4 +77,5 @@ try {
 
 </body>
 </html>
+
 
