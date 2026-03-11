@@ -39,6 +39,99 @@ try {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <title>TiDB Manager Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+    
+    <style>
+        .container-fluid { margin-top: 20px; }
+        .dataTables_filter { margin-bottom: 20px; }
+        thead input { width: 100%; padding: 3px; box-sizing: border-box; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="card shadow-sm p-4">
+        <div class="d-flex justify-content-between mb-3">
+            <h3>Explorador de TiDB</h3>
+            <form method="GET">
+                <select name="t" class="form-select" onchange="this.form.submit()">
+                    <?php foreach ($todas_las_tablas as $t): ?>
+                        <option value="<?= $t ?>" <?= $t == $tabla_actual ? 'selected' : '' ?>><?= $t ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </form>
+        </div>
+
+        <table id="mainTable" class="table table-striped table-bordered dt-responsive nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <?php foreach ($columnas as $col): ?>
+                        <th><?= htmlspecialchars($col) ?></th>
+                    <?php endforeach; ?>
+                </tr>
+                <tr class="filters">
+                    <?php foreach ($columnas as $col): ?>
+                        <td><input type="text" placeholder="Filtrar <?= $col ?>" /></td>
+                    <?php endforeach; ?>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($datos as $fila): ?>
+                    <tr>
+                        <?php foreach ($fila as $col_name => $valor): ?>
+                            <td>
+                                <?php if (stripos($col_name, 'save') !== false && !empty($valor)): ?>
+                                    <a href="download.php?t=<?= urlencode($tabla_actual) ?>&c=<?= urlencode($col_name) ?>&pk=<?= urlencode($pk_name) ?>&id=<?= urlencode($fila[$pk_name]) ?>" class="btn btn-sm btn-primary">📥 Save</a>
+                                <?php else: ?>
+                                    <?= htmlspecialchars(strlen($valor ?? '') > 50 ? substr($valor, 0, 50) . '...' : ($valor ?? '')) ?>
+                                <?php endif; ?>
+                            </td>
+                        <?php endforeach; ?>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+
+
+<script>
+$(document).ready(function() {
+    // 1. Inicializar DataTable
+    var table = $('#mainTable').DataTable({
+        orderCellsTop: true, // Usa la fila de arriba para ordenar, no la de los filtros
+        fixedHeader: true,
+        pageLength: 10,      // <--- PAGINACIÓN: Filas por página
+        lengthMenu: [10, 25, 50, 100],
+        language: {
+            url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+        }
+    });
+
+    // 2. Lógica de los filtros individuales
+    $('#mainTable thead .filters input').on('keyup change', function() {
+        var index = $(this).parent().index(); // Busca en qué columna está el input
+        table.column(index).search(this.value).draw();
+    });
+});
+</script>
+
+</body>
+</html>
+<!-- 
+    
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TiDB Explorer Pro4</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -138,3 +231,4 @@ $(document).ready(function() {
 
 </body>
 </html>
+ -->
