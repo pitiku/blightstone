@@ -117,17 +117,24 @@ try {
 
 <script>
 $(document).ready(function() {
-    var table = $('#tiTable').DataTable({
-        language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' },
-        pageLength: 15,
-        initComplete: function () {
-            this
+    // 1. Inicializar DataTable
+    var table = $('#mainTable').DataTable({
+        orderCellsTop: true, // Usa la fila de arriba para ordenar, no la de los filtros
+        fixedHeader: true,
+        pageLength: 10,      // <--- PAGINACIÓN: Filas por página
+        lengthMenu: [10, 25, 50, 100],
+        language: {
+            url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+        }
+    });
 
+    // 2. Lógica de los filtros individuales
+    $('#mainTable thead .filters input').on('keyup change', function() {
+        var index = $(this).parent().index(); // Busca en qué columna está el input
+        table.column(index).search(this.value).draw();
+    });
+});
+</script>
 
-
-
-
-
-
-
-
+</body>
+</html>
