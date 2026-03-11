@@ -1,5 +1,11 @@
 <?php
-// Conexión (usa tus variables de Railway)
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+// Verificar que lleguen los datos
+if (!isset($_GET['t'], $_GET['c'], $_GET['pk'], $_GET['id'])) {
+    die("Faltan parámetros en la URL (t, c, pk o id).");
+}
 
 $host = 'gateway01.eu-central-1.prod.aws.tidbcloud.com';
 $user = '2p7TUipr1WHHH3f.root';
