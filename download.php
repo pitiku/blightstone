@@ -16,10 +16,10 @@ try {
     ];
     $pdo = new PDO($dsn, $user, $pass, $options);
     
-    $tabla = $_GET['tabla'];
-    $columna = $_GET['columna'];
-    $id_campo = $_GET['id_campo']; // Nombre de la columna clave primaria
-    $id_valor = $_GET['id_valor'];
+    $tabla = $_GET['t'];
+    $columna = $_GET['c'];
+    $id_campo = $_GET['pk']; // Nombre de la columna clave primaria
+    $id_valor = $_GET['id'];
 
     // Consulta específica para el BLOB
     $stmt = $pdo->prepare("SELECT `$columna` FROM `$tabla` WHERE `$id_campo` = ?");
