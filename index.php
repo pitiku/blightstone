@@ -5,7 +5,6 @@ $user = '2p7TUipr1WHHH3f.root';
 $pass = '5ZcNOCkyQA9VGvfL';
 $db   = 'BS';
 $port = 4000;
-$tabla = 'Z_errors'; // Puedes cambiar esto por cualquier tabla de tu DB
 
 try {
     $dsn = "mysql:host=$host;dbname=$db;port=$port;charset=utf8mb4";
@@ -32,11 +31,31 @@ try {
     $datos = $stmt->fetchAll();
     $columnas = !empty($datos) ? array_keys($datos[0]) : [];
 
+    $metadatos = [];
+for ($i = 0; $i < $stmt->columnCount(); $i++) {
+    $meta = $stmt->getColumnMeta($i);
+    $metadatos[$meta['name']] = $meta['native_type']; // 'BLOB', 'LONG_BLOB', etc.
+}
+
+// Suponemos que la primera columna es siempre el ID/Primary Key para las descargas
+$pk_name = $columnas[0];
+
 } catch (PDOException $e) {
     die("Error: " . $e->getMessage());
 }
 ?>
-
+<?php foreach ($fila as $col_name => $valor): ?>
+    <td>
+        <?php if (strpos($metadatos[$col_name], 'BLOB') !== false && !empty($valor)): ?>
+            <a href="download.php?tabla=<?= $tabla_actual ?>&columna=<?= $col_name ?>&id_campo=<?= $pk_name ?>&id_valor=<?= $fila[$pk_name] ?>" 
+               class="btn btn-sm btn-primary">
+               📥 Descargar
+            </a>
+        <?php else: ?>
+            <?= htmlspecialchars(substr($valor, 0, 50)) . (strlen($valor) > 50 ? '...' : '') ?>
+        <?php endif; ?>
+    </td>
+<?php endforeach; ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -124,3 +143,4 @@ $(document).ready(function() {
 
 </body>
 </html>
+
