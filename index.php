@@ -26,20 +26,7 @@ try {
     // 2. Obtener datos (Limitado a 500 para no saturar memoria con BLOBs)
     $stmt = $pdo->query("SELECT * FROM `$tabla_actual` LIMIT 500");
     $datos = $stmt->fetchAll();
-    
-    // 3. Detectar METADATOS (Para identificar BLOBs)
-    $es_blob = [];
-    for ($i = 0; $i < $stmt->columnCount(); $i++) {
-        $meta = $stmt->getColumnMeta($i);
-        $tipo = strtoupper($meta['native_type'] ?? '');
-        
-        // Lista estricta de tipos que realmente son archivos binarios
-        // Excluimos 'VAR_STRING' y 'STRING' que son los VARCHAR y TEXT normales
-        $tipos_binarios = ['BLOB', 'LONGBLOB'];
-        
-        $es_blob[$meta['name']] = in_array($tipo, $tipos_binarios);
-    }
-    
+      
     $columnas = !empty($datos) ? array_keys($datos[0]) : [];
     $pk_name = $columnas[0] ?? 'id'; // Asumimos que la primera col es la ID
 
@@ -93,7 +80,12 @@ try {
                     <tr>
                         <?php foreach ($fila as $col_name => $valor): ?>
                             <td>
-                                <?php if ($es_blob[$col_name] && !empty($valor)): ?>
+                                <?php 
+        // Filtro por nombre: Si la columna contiene la palabra "save" (case-insensitive)
+        $es_archivo = (stripos($col_name, 'save') !== false);
+        
+        if ($es_archivo && !empty($valor)): 
+        ?>
                                     <a href="download.php?t=<?= urlencode($tabla_actual) ?>&c=<?= urlencode($col_name) ?>&pk=<?= urlencode($pk_name) ?>&id=<?= urlencode($fila[$pk_name]) ?>" 
                                        class="btn btn-outline-primary blob-btn">
                                         📥 Descargar File
@@ -130,6 +122,7 @@ $(document).ready(function() {
         pageLength: 15,
         initComplete: function () {
             this
+
 
 
 
