@@ -39,120 +39,25 @@ try {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TiDB Manager Pro</title>
+    <title>TiDB Explorer Pro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
-    
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <style>
-        .container-fluid { margin-top: 20px; }
-        .dataTables_filter { margin-bottom: 20px; }
-        thead input { width: 100%; padding: 3px; box-sizing: border-box; font-size: 12px; }
+        body { background: #f4f7f6; padding: 20px; font-size: 0.85rem; }
+        .card { border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: none; }
+        .clickable-cell { cursor: pointer; color: #212529; }
+        .clickable-cell:hover { background: #e9ecef; border-radius: 4px; }
+        .filters input { width: 100%; font-size: 0.75rem; padding: 2px 5px; }
     </style>
 </head>
 <body>
 
 <div class="container-fluid">
-    <div class="card shadow-sm p-4">
-        <div class="d-flex justify-content-between mb-3">
-            <h3>Explorador de TiDB</h3>
-            <form method="GET">
-                <select name="t" class="form-select" onchange="this.form.submit()">
-                    <?php foreach ($todas_las_tablas as $t): ?>
-                        <option value="<?= $t ?>" <?= $t == $tabla_actual ? 'selected' : '' ?>><?= $t ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </form>
-        </div>
-
-        <table id="mainTable" class="table table-striped table-bordered dt-responsive nowrap" style="width:100%">
-            <thead>
-                <tr>
-                    <?php foreach ($columnas as $col): ?>
-                        <th><?= htmlspecialchars($col) ?></th>
-                    <?php endforeach; ?>
-                </tr>
-                <tr class="filters">
-                    <?php foreach ($columnas as $col): ?>
-                        <td><input type="text" placeholder="Filtrar <?= $col ?>" /></td>
-                    <?php endforeach; ?>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($datos as $fila): ?>
-                    <tr>
-                        <?php foreach ($fila as $col_name => $valor): ?>
-                            <td>
-                                <?php if (stripos($col_name, 'save') !== false && !empty($valor)): ?>
-                                    <a href="download.php?t=<?= urlencode($tabla_actual) ?>&c=<?= urlencode($col_name) ?>&pk=<?= urlencode($pk_name) ?>&id=<?= urlencode($fila[$pk_name]) ?>" class="btn btn-sm btn-primary">📥 Save</a>
-                                <?php else: ?>
-                                    <?= htmlspecialchars(strlen($valor ?? '') > 50 ? substr($valor, 0, 50) . '...' : ($valor ?? '')) ?>
-                                <?php endif; ?>
-                            </td>
-                        <?php endforeach; ?>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-
-
-
-<script>
-$(document).ready(function() {
-    // 1. Inicializar DataTable
-    var table = $('#mainTable').DataTable({
-        orderCellsTop: true, // Usa la fila de arriba para ordenar, no la de los filtros
-        fixedHeader: true,
-        pageLength: 10,      // <--- PAGINACIÓN: Filas por página
-        lengthMenu: [10, 25, 50, 100],
-        language: {
-            url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
-        }
-    });
-
-    // 2. Lógica de los filtros individuales
-    $('#mainTable thead .filters input').on('keyup change', function() {
-        var index = $(this).parent().index(); // Busca en qué columna está el input
-        table.column(index).search(this.value).draw();
-    });
-});
-</script>
-
-</body>
-</html>
-<!-- 
-    
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TiDB Explorer Pro4</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f4f7f6; font-size: 0.9rem; }
-        .main-card { background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); padding: 25px; margin-top: 30px; }
-        .blob-btn { --bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem; }
-        tfoot input { width: 100%; padding: 4px; border: 1px solid #ddd; border-radius: 4px; }
-    </style>
-</head>
-<body>
-
-<div class="container-fluid px-4">
-    <div class="main-card">
+    <div class="card p-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="fw-bold text-primary m-0">TiDB Manager <span class="badge bg-secondary fs-6"><?= $tabla_actual ?></span></h4>
-            
-            <form method="GET" class="d-flex align-items-center gap-2">
-                <label class="text-muted small fw-bold">TABLA:</label>
-                <select name="t" class="form-select form-select-sm" onchange="this.form.submit()" style="width: 200px;">
+            <h4 class="m-0 text-primary">TiDB Explorer</h4>
+            <form method="GET" class="d-flex gap-2">
+                <select name="t" class="form-select form-select-sm" onchange="this.form.submit()" style="width: 250px;">
                     <?php foreach ($todas_las_tablas as $t): ?>
                         <option value="<?= $t ?>" <?= $t == $tabla_actual ? 'selected' : '' ?>><?= $t ?></option>
                     <?php endforeach; ?>
@@ -160,75 +65,88 @@ $(document).ready(function() {
             </form>
         </div>
 
-        <table id="tiTable" class="table table-hover align-middle">
-            <thead class="table-light">
-                <tr>
-                    <?php foreach ($columnas as $col): ?>
-                        <th><?= htmlspecialchars($col) ?></th>
-                    <?php endforeach; ?>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($datos as $fila): ?>
+        <div class="table-responsive">
+            <table id="mainTable" class="table table-hover table-bordered w-100">
+                <thead class="table-dark">
                     <tr>
-                        <?php foreach ($fila as $col_name => $valor): ?>
-                            <td>
-                                <?php 
-        // Filtro por nombre: Si la columna contiene la palabra "save" (case-insensitive)
-        $es_archivo = (stripos($col_name, 'save') !== false);
-        
-        if ($es_archivo && !empty($valor)): 
-        ?>
-                                    <a href="download.php?t=<?= urlencode($tabla_actual) ?>&c=<?= urlencode($col_name) ?>&pk=<?= urlencode($pk_name) ?>&id=<?= urlencode($fila[$pk_name]) ?>" 
-                                       class="btn btn-outline-primary blob-btn">
-                                        📥 Descargar File
-                                    </a>
-                                <?php else: ?>
-                                    <span title="<?= htmlspecialchars($valor ?? '') ?>">
-                                        <?= htmlspecialchars(strlen($valor ?? '') > 60 ? $valor : ($valor ?? 'NULL')) ?>
-                                    </span>
-                                <?php endif; ?>
-                            </td>
+                        <?php foreach ($columnas as $col): ?>
+                            <th><?= htmlspecialchars($col) ?></th>
                         <?php endforeach; ?>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <?php foreach ($columnas as $col): ?>
-                        <th><input type="text" placeholder="<?= $col ?>"></th>
+                    <tr class="filters">
+                        <?php foreach ($columnas as $col): ?>
+                            <td><input type="text" placeholder="Filtrar <?= $col ?>"></td>
+                        <?php endforeach; ?>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($datos as $fila): ?>
+                        <tr>
+                            <?php foreach ($fila as $col_name => $valor): ?>
+                                <td>
+                                    <?php if (stripos($col_name, 'save') !== false && !empty($valor)): ?>
+                                        <a href="download.php?t=<?= urlencode($tabla_actual) ?>&c=<?= urlencode($col_name) ?>&pk=<?= urlencode($pk_name) ?>&id=<?= urlencode($fila[$pk_name]) ?>" 
+                                           class="btn btn-primary btn-sm px-2 py-0">📥 Descargar</a>
+                                    <?php else: ?>
+                                        <div class="clickable-cell" 
+                                             data-fulltext="<?= htmlspecialchars($valor ?? '') ?>" 
+                                             data-colname="<?= htmlspecialchars($col_name) ?>"
+                                             onclick="showModal(this)">
+                                            <?= htmlspecialchars(strlen($valor ?? '') > 40 ? substr($valor, 0, 40) . '...' : ($valor ?? '')) ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </td>
+                            <?php endforeach; ?>
+                        </tr>
                     <?php endforeach; ?>
-                </tr>
-            </tfoot>
-        </table>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="textModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title" id="modalTitle">Detalle de campo</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <pre id="modalBody" style="white-space: pre-wrap; word-wrap: break-word; background: #f8f9fa; padding: 15px;"></pre>
+            </div>
+        </div>
     </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
 $(document).ready(function() {
-    // 1. Inicializar DataTable
     var table = $('#mainTable').DataTable({
-        orderCellsTop: true, // Usa la fila de arriba para ordenar, no la de los filtros
-        fixedHeader: true,
-        pageLength: 10,      // <--- PAGINACIÓN: Filas por página
-        lengthMenu: [10, 25, 50, 100],
-        language: {
-            url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
-        }
+        orderCellsTop: true,
+        pageLength: 15,
+        language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json" }
     });
 
-    // 2. Lógica de los filtros individuales
-    $('#mainTable thead .filters input').on('keyup change', function() {
-        var index = $(this).parent().index(); // Busca en qué columna está el input
+    // Filtros por columna
+    $('#mainTable .filters input').on('keyup change', function() {
+        var index = $(this).parent().index();
         table.column(index).search(this.value).draw();
     });
 });
+
+function showModal(el) {
+    const text = $(el).data('fulltext');
+    const col = $(el).data('colname');
+    $('#modalTitle').text("Columna: " + col);
+    $('#modalBody').text(text || "NULL");
+    new bootstrap.Modal(document.getElementById('textModal')).show();
+}
 </script>
 
 </body>
 </html>
- -->
