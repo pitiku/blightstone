@@ -33,6 +33,15 @@ try {
     $file = $stmt->fetch();
 
     if ($file) {
+        if($columna == 'saveProgression')
+        {
+            $filename = "SavedGame_1_progression.sav";
+        }
+        else
+        {
+            $filename = "SavedGame_1_run.sav";
+        }
+        
         header("Content-Type: application/octet-stream");
         header("Content-Disposition: attachment; filename=\"archivo_{$columna}_{$id_valor}.bin\"");
         echo $file[$columna];
