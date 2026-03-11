@@ -35,7 +35,7 @@ try {
         
         // Lista estricta de tipos que realmente son archivos binarios
         // Excluimos 'VAR_STRING' y 'STRING' que son los VARCHAR y TEXT normales
-        $tipos_binarios = ['BLOB', 'TINYBLOB', 'MEDIUMBLOB', 'LONGBLOB', 'BINARY', 'VARBINARY'];
+        $tipos_binarios = ['BLOB', 'LONGBLOB'];
         
         $es_blob[$meta['name']] = in_array($tipo, $tipos_binarios);
     }
@@ -130,6 +130,7 @@ $(document).ready(function() {
         pageLength: 15,
         initComplete: function () {
             this
+
 
 
 
