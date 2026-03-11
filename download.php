@@ -43,7 +43,7 @@ try {
         }
         
         header("Content-Type: application/octet-stream");
-        header("Content-Disposition: attachment; filename=\"archivo_{$columna}_{$id_valor}.bin\"");
+        header("Content-Disposition: attachment; filename=\"{$filename}\"");
         echo $file[$columna];
     }
 } catch (Exception $e) { die("Error"); }
