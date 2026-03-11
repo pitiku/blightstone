@@ -7,75 +7,120 @@ $db   = 'BS';
 $port = 4000;
 $tabla = 'Z_errors'; // Puedes cambiar esto por cualquier tabla de tu DB
 
-$dsn = "mysql:host=$host;dbname=$db;port=$port;charset=utf8mb4";
-
 try {
+    $dsn = "mysql:host=$host;dbname=$db;port=$port;charset=utf8mb4";
     $options = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        // ESTO ES LO QUE SOLUCIONA EL INSECURE TRANSPORT:
-        PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false, // Evita errores de certificados auto-firmados
-        PDO::MYSQL_ATTR_SSL_CA => '',                   // Activa el modo SSL en el driver
+        PDO::MYSQL_ATTR_SSL_CA => '', 
+        PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
     ];
-    
     $pdo = new PDO($dsn, $user, $pass, $options);
-    
-    $pdo->exec("SET SESSION sql_mode = 'STRICT_TRANS_TABLES'");
-    
-    // 2. Ejecutar la consulta
-    $stmt = $pdo->query("SELECT * FROM $tabla LIMIT 50");
-    
-    // 3. Obtener todos los datos en un array
-    $resultados = $stmt->fetchAll();
 
-    // Si la tabla está vacía, no hay nada que mostrar
-    if (empty($resultados)) {
-        die("La tabla '$tabla' está vacía o no existe.");
-    }
+    // 2. Obtener lista de todas las tablas para el Dropdown
+    $tablas_query = $pdo->query("SHOW TABLES");
+    $todas_las_tablas = $tablas_query->fetchAll(PDO::FETCH_COLUMN);
 
-    // 4. Extraer los nombres de las columnas de la primera fila
-    $columnas = array_keys($resultados[0]);
+    // 3. Tabla seleccionada (por defecto la primera)
+    $tabla_actual = $_GET['t'] ?? $todas_las_tablas[0];
+
+    // Validar que la tabla existe (Seguridad)
+    if (!in_array($tabla_actual, $todas_las_tablas)) { die("Tabla no válida"); }
+
+    // 4. Consultar datos
+    $stmt = $pdo->query("SELECT * FROM `$tabla_actual` LIMIT 1000"); // Limitamos por rendimiento
+    $datos = $stmt->fetchAll();
+    $columnas = !empty($datos) ? array_keys($datos[0]) : [];
 
 } catch (PDOException $e) {
-    die("Error de conexión: " . $e->getMessage());
+    die("Error: " . $e->getMessage());
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <title>TiDB Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <style>
-        table { border-collapse: collapse; width: 90%; margin: 20px auto; font-family: sans-serif; }
-        th { background-color: #007bff; color: white; text-transform: uppercase; font-size: 12px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        tr:nth-child(even) { background-color: #f2f2f2; }
-        tr:hover { background-color: #ddd; }
+        body { background: #f8f9fa; padding: 20px; }
+        .card { border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        tfoot input { width: 100%; padding: 3px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
-<h2 style="text-align:center;">Datos de la tabla: <?php echo htmlspecialchars($tabla); ?></h2>
+<div class="container-fluid">
+    <div class="card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>TiDB Explorer</h2>
+            
+            <form method="GET" class="d-flex gap-2">
+                <select name="t" class="form-select" onchange="this.form.submit()">
+                    <?php foreach ($todas_las_tablas as $t): ?>
+                        <option value="<?= $t ?>" <?= $t == $tabla_actual ? 'selected' : '' ?>><?= $t ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </form>
+        </div>
 
-<table>
-    <thead>
-        <tr>
-            <?php foreach ($columnas as $columna): ?>
-                <th><?php echo htmlspecialchars($columna); ?></th>
-            <?php endforeach; ?>
-        </tr>
-    </thead>
-    <tbody>
-        <?php foreach ($resultados as $fila): ?>
-            <tr>
-                <?php foreach ($fila as $valor): ?>
-                    <td><?php echo htmlspecialchars($valor ?? 'NULL'); ?></td>
-                <?php endforeach; ?>
-            </tr>
-        <?php endforeach; ?>
-    </tbody>
-</table>
+        <div class="table-responsive">
+            <table id="mainTable" class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <?php foreach ($columnas as $col): ?>
+                            <th><?= htmlspecialchars($col) ?></th>
+                        <?php endforeach; ?>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($datos as $fila): ?>
+                        <tr>
+                            <?php foreach ($fila as $valor): ?>
+                                <td><?= htmlspecialchars($valor ?? 'NULL') ?></td>
+                            <?php endforeach; ?>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <?php foreach ($columnas as $col): ?>
+                            <th><input type="text" placeholder="Filtrar <?= htmlspecialchars($col) ?>" /></th>
+                        <?php endforeach; ?>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Inicializar DataTables
+    var table = $('#mainTable').DataTable({
+        "pageLength": 10,
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+        }
+    });
+
+    // Aplicar los filtros por columna
+    table.columns().every(function() {
+        var that = this;
+        $('input', this.footer()).on('keyup change clear', function() {
+            if (that.search() !== this.value) {
+                that.search(this.value).draw();
+            }
+        });
+    });
+});
+</script>
 
 </body>
 </html>
-
-
