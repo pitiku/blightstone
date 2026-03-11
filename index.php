@@ -92,7 +92,7 @@ try {
                                     </a>
                                 <?php else: ?>
                                     <span title="<?= htmlspecialchars($valor ?? '') ?>">
-                                        <?= htmlspecialchars(strlen($valor ?? '') > 60 ? substr($valor, 0, 60) . '...' : ($valor ?? 'NULL')) ?>
+                                        <?= htmlspecialchars(strlen($valor ?? '') > 60 ? $valor : ($valor ?? 'NULL')) ?>
                                     </span>
                                 <?php endif; ?>
                             </td>
@@ -122,6 +122,7 @@ $(document).ready(function() {
         pageLength: 15,
         initComplete: function () {
             this
+
 
 
 
