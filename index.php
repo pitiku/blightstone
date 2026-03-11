@@ -31,9 +31,13 @@ try {
     $es_blob = [];
     for ($i = 0; $i < $stmt->columnCount(); $i++) {
         $meta = $stmt->getColumnMeta($i);
-        // En PHP/PDO, los tipos BLOB suelen reportarse como 'BLOB' o 'string' con flags
-        // Verificamos si el nombre del tipo contiene 'BLOB'
-        $es_blob[$meta['name']] = (isset($meta['native_type']) && strpos(strtoupper($meta['native_type']), 'BLOB') !== false);
+        $tipo = strtoupper($meta['native_type'] ?? '');
+        
+        // Lista estricta de tipos que realmente son archivos binarios
+        // Excluimos 'VAR_STRING' y 'STRING' que son los VARCHAR y TEXT normales
+        $tipos_binarios = ['BLOB', 'TINYBLOB', 'MEDIUMBLOB', 'LONGBLOB', 'BINARY', 'VARBINARY'];
+        
+        $es_blob[$meta['name']] = in_array($tipo, $tipos_binarios);
     }
     
     $columnas = !empty($datos) ? array_keys($datos[0]) : [];
@@ -126,3 +130,4 @@ $(document).ready(function() {
         pageLength: 15,
         initComplete: function () {
             this
+
