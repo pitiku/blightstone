@@ -10,11 +10,18 @@ $tabla = 'Z_errors'; // Puedes cambiar esto por cualquier tabla de tu DB
 $dsn = "mysql:host=$host;dbname=$db;port=$port;charset=utf8mb4";
 
 try {
-    $pdo = new PDO($dsn, $user, $pass, [
+    $options = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-    ]);
-
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        // ESTO ES LO QUE SOLUCIONA EL INSECURE TRANSPORT:
+        PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false, // Evita errores de certificados auto-firmados
+        PDO::MYSQL_ATTR_SSL_CA => '',                   // Activa el modo SSL en el driver
+    ];
+    
+    $pdo = new PDO($dsn, $user, $pass, $options);
+    
+    $pdo->exec("SET SESSION sql_mode = 'STRICT_TRANS_TABLES'");
+    
     // 2. Ejecutar la consulta
     $stmt = $pdo->query("SELECT * FROM $tabla LIMIT 50");
     
@@ -70,3 +77,4 @@ try {
 
 </body>
 </html>
+
