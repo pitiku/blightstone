@@ -30,11 +30,20 @@ try {
 
     // 3. Preparar la consulta principal con o sin filtro
     if ($filtro_seleccionado !== '') {
-        $sql = "SELECT * FROM $tabla WHERE $columna_filtro = :valor";
+        //$sql = "SELECT * FROM $tabla WHERE $columna_filtro = :valor";
+        $sql = "select count(*) as total, exception, message, version
+                from z_error
+                WHERE $columna_filtro = :valor
+                group by exception, message, version
+                order by total desc;";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['valor' => $filtro_seleccionado]);
     } else {
-        $sql = "SELECT * FROM $tabla";
+        //$sql = "SELECT * FROM $tabla";
+        $sql = "select count(*) as total, exception, message, version
+                from z_error
+                group by exception, message, version
+                order by total desc;";
         $stmt = $pdo->query($sql);
     }
     $resultados = $stmt->fetchAll();
