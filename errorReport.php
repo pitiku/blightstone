@@ -16,19 +16,13 @@ try {
     ];
     $pdo = new PDO($dsn, $user, $pass, $options);
 
-    // 1. Listado de tablas para el Dropdown
-    $tablas_query = $pdo->query("SHOW TABLES");
-    $todas_las_tablas = $tablas_query->fetchAll(PDO::FETCH_COLUMN);
-    $tabla_actual = $_GET['t'] ?? ($todas_las_tablas[0] ?? '');
-
-    if (!$tabla_actual) die("No hay tablas en la base de datos.");
-
-    // 2. Obtener datos (Limitado a 500 para no saturar memoria con BLOBs)
-    $stmt = $pdo->query("SELECT * FROM `$tabla_actual`");
+    $version = $_GET['v'];
+    $where = $version ? 'WHERE version = '$version'' : '';
+    
+    $stmt = $pdo->query("select count(*) as total, exception, message, version from z_error `$version` group by exception, message, version order by total desc;");
     $datos = $stmt->fetchAll();
       
     $columnas = !empty($datos) ? array_keys($datos[0]) : [];
-    $pk_name = $columnas[0] ?? 'id'; // Asumimos que la primera col es la ID
 
 } catch (PDOException $e) {
     die("Error crítico: " . $e->getMessage());
@@ -39,7 +33,7 @@ try {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TiDB Explorer Pro</title>
+    <title>Error Report</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <style>
@@ -84,17 +78,12 @@ try {
                         <tr>
                             <?php foreach ($fila as $col_name => $valor): ?>
                                 <td>
-                                    <?php if (stripos($col_name, 'save') !== false && !empty($valor)): ?>
-                                        <a href="download.php?t=<?= urlencode($tabla_actual) ?>&c=<?= urlencode($col_name) ?>&pk=<?= urlencode($pk_name) ?>&id=<?= urlencode($fila[$pk_name]) ?>" 
-                                           class="btn btn-primary btn-sm px-2 py-0">📥 Descargar</a>
-                                    <?php else: ?>
                                         <div class="clickable-cell" 
                                              data-fulltext="<?= htmlspecialchars($valor ?? '') ?>" 
                                              data-colname="<?= htmlspecialchars($col_name) ?>"
                                              onclick="showModal(this)">
                                             <?= htmlspecialchars(strlen($valor ?? '') > 40 ? substr($valor, 0, 40) . '...' : ($valor ?? '')) ?>
                                         </div>
-                                    <?php endif; ?>
                                 </td>
                             <?php endforeach; ?>
                         </tr>
