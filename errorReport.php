@@ -19,7 +19,7 @@ try {
     $version = $_GET['v'];
     $where = $version ? 'WHERE version = '$version'' : '';
     
-    $stmt = $pdo->query("select count(*) as total, exception, message, version from z_error `$version` group by exception, message, version order by total desc;");
+    $stmt = $pdo->query("select count(*) as total, exception, message, version from z_error group by exception, message, version order by total desc;");
     $datos = $stmt->fetchAll();
       
     $columnas = !empty($datos) ? array_keys($datos[0]) : [];
