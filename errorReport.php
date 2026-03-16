@@ -20,7 +20,10 @@ try {
 
     // 3. Definir la tabla y la consulta (Cambia 'usuarios' por tu tabla real)
     $tabla = 'usuarios'; 
-    $stmt = $pdo->query("SELECT * FROM $tabla");
+    $stmt = $pdo->query("select count(*) as total, exception, message, version
+        from z_error
+        group by exception, message, version
+        order by total desc;");
     $filas = $stmt->fetchAll();
 
     // 4. Mostrar los datos en una tabla HTML
