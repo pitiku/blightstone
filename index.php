@@ -24,7 +24,7 @@ try {
     if (!$tabla_actual) die("No hay tablas en la base de datos.");
 
     // 2. Obtener datos (Limitado a 500 para no saturar memoria con BLOBs)
-    $stmt = $pdo->query("SELECT * FROM `$tabla_actual`");
+    $stmt = $pdo->query("SELECT * FROM `$tabla_actual` order by id desc");
     $datos = $stmt->fetchAll();
       
     $columnas = !empty($datos) ? array_keys($datos[0]) : [];
