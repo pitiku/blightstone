@@ -37,9 +37,13 @@ try {
         {
             $filename = "SavedGame_1_progression.sav";
         }
-        else
+        else if($columna == 'saveRun')
         {
             $filename = "SavedGame_1_run.sav";
+        }
+        else if($columna == 'save')
+        {
+            $filename = "save.zip";
         }
         
         header("Content-Type: application/octet-stream");
