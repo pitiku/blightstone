@@ -106,6 +106,7 @@ try {
 				</select>
 				<a href="?">Limpiar</a>
 			</form>
+			<a href="https://blightstone-production.up.railway.app/errorReport.php">Error Report</a>	
 		</div>
 
         <div class="table-responsive">
