@@ -56,7 +56,7 @@ try {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Consulta con Filtro</title>
+    <title>Error Report</title>
     <style>
         body { font-family: sans-serif; padding: 20px; }
         table { border-collapse: collapse; width: 100%; margin-top: 20px; }
@@ -67,7 +67,7 @@ try {
 </head>
 <body>
 
-    <h2>Listado de <?php echo ucfirst($tabla); ?></h2>
+    <h2>Error Report (<?php echo ucfirst($tabla); ?>)</h2>
 
     <div class="buscador">
         <form method="GET" action="">
@@ -84,9 +84,12 @@ try {
             </select>
             <a href="?">Limpiar</a>
         </form>
+        <a href="https://blightstone-production.up.railway.app">Views</a>	
     </div>
 
-    <?php if ($resultados): ?>
+	<?php if($filtro_seleccionado == ''): ?>
+        <p>Selecciona una versión</p>
+    <?php elseif ($resultados): ?>
         <table>
             <thead>
                 <tr>
