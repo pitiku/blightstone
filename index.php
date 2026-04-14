@@ -5,6 +5,8 @@ $user = '2p7TUipr1WHHH3f.root';
 $pass = '5ZcNOCkyQA9VGvfL';
 $db   = 'BS';
 $port = 4000;
+$tabla  = 'z_error'; 
+$columna_filtro = 'version'; // La columna por la que quieres filtrar
 
 try {
     $dsn = "mysql:host=$host;dbname=$db;port=$port;charset=utf8mb4";
@@ -16,6 +18,13 @@ try {
     ];
     $pdo = new PDO($dsn, $user, $pass, $options);
 
+    // 0. Obtener las versiones para el filtro
+    $stmt_opciones = $pdo->query("SELECT DISTINCT $columna_filtro FROM $tabla ORDER BY $columna_filtro ASC");
+    $opciones = $stmt_opciones->fetchAll(PDO::FETCH_COLUMN);
+
+    // 0.1. Capturar el valor seleccionado del formulario
+    $filtro_seleccionado = $_GET['filtro'] ?? '';
+
     // 1. Listado de tablas para el Dropdown
     $tablas_query = $pdo->query("SHOW TABLES");
     $todas_las_tablas = $tablas_query->fetchAll(PDO::FETCH_COLUMN);
@@ -23,8 +32,17 @@ try {
 
     if (!$tabla_actual) die("No hay tablas en la base de datos.");
 
-    // 2. Obtener datos (Limitado a 500 para no saturar memoria con BLOBs)
-    $stmt = $pdo->query("SELECT * FROM `$tabla_actual`");
+    // 2. Obtener datos (Limitado a 5000 para que no pete)
+	if ($filtro_seleccionado !== '')
+	{
+		$stmt = $pdo->query("SELECT * FROM `$tabla_actual` 
+			WHERE id_session in (select id from BS.B_session where version = '$filtro_seleccionado') 
+			ORDER BY id DESC LIMIT 5000");
+	}
+	else
+	{
+		$stmt = $pdo->query("SELECT * FROM `$tabla_actual` ORDER BY id DESC LIMIT 5000");
+	}
     $datos = $stmt->fetchAll();
       
     $columnas = !empty($datos) ? array_keys($datos[0]) : [];
@@ -39,7 +57,7 @@ try {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TiDB Explorer Pro</title>
+    <title>Analytics Views</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <style>
@@ -55,7 +73,8 @@ try {
 <div class="container-fluid">
     <div class="card p-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="m-0 text-primary">TiDB Explorer</h4>
+            <h4 class="m-0 text-primary">Analytics Views</h4>
+			<!--
             <form method="GET" class="d-flex gap-2">
                 <select name="t" class="form-select form-select-sm" onchange="this.form.submit()" style="width: 250px;">
                     <?php foreach ($todas_las_tablas as $t): ?>
@@ -63,7 +82,32 @@ try {
                     <?php endforeach; ?>
                 </select>
             </form>
+			-->
         </div>
+
+		<div class="buscador">
+			<form method="GET" action="">
+				<label>Tabla: </label>
+                <select name="t" onchange="this.form.submit()" style="inline-block;">
+                    <?php foreach ($todas_las_tablas as $t): ?>
+                        <option value="<?= $t ?>" <?= $t == $tabla_actual ? 'selected' : '' ?>><?= $t ?></option>
+                    <?php endforeach; ?>
+                </select>
+				<label>		Versión:</label>
+				<select name="filtro" onchange="this.form.submit()" style="inline-block">
+					<option value="">-- Todos --</option>
+					<?php foreach ($opciones as $opcion): ?>
+						<?php if ($opcion === null) continue; ?>
+						<option value="<?php echo htmlspecialchars($opcion); ?>" 
+							<?php if ($filtro_seleccionado === $opcion) echo 'selected'; ?>>
+							<?php echo htmlspecialchars($opcion); ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+				<a href="?">Limpiar</a>
+			</form>
+			<a href="https://blightstone-production.up.railway.app/errorReport.php">Error Report</a>	
+		</div>
 
         <div class="table-responsive">
             <table id="mainTable" class="table table-hover table-bordered w-100">
