@@ -22,7 +22,9 @@ try {
     $pdo = new PDO($dsn, $user, $pass, $options);
 
     // 1. Obtener los valores únicos para el Dropdown
-    $stmt_opciones = $pdo->query("SELECT DISTINCT $columna_filtro FROM $tabla ORDER BY $columna_filtro ASC");
+    $stmt_opciones = $pdo->query("SELECT DISTINCT(version) from b_session
+									UNION
+									SELECT DISTINCT(version) from z_errorsUnique");
     $opciones = $stmt_opciones->fetchAll(PDO::FETCH_COLUMN);
 
     // 2. Capturar el valor seleccionado del formulario
