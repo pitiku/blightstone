@@ -5,7 +5,7 @@ $user = '2p7TUipr1WHHH3f.root';
 $pass = '5ZcNOCkyQA9VGvfL';
 $db   = 'BS_30';
 $port = 4000;
-$tabla  = 'z_errorsUnique'; 
+$tabla  = 'B_session'; 
 $columna_filtro = 'version'; // La columna por la que quieres filtrar
 
 try {
