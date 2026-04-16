@@ -56,7 +56,7 @@ try {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Error Report</title>
+    <title>Error Report OLD</title>
     <style>
         body { font-family: sans-serif; padding: 20px; }
         table { border-collapse: collapse; width: 100%; margin-top: 20px; }
