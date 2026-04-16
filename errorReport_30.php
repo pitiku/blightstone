@@ -92,9 +92,7 @@ try {
 		<a href="https://blightstone-production.up.railway.app/errorReport.php">Error Report OLD</a> - 
     </div>
 
-	<?php if($filtro_seleccionado == ''): ?>
-        <p>Selecciona una versión</p>
-    <?php elseif ($resultados): ?>
+    <?php if ($resultados): ?>
         <table>
             <thead>
                 <tr>
