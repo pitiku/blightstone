@@ -35,9 +35,16 @@ try {
     // 2. Obtener datos (Limitado a 5000 para que no pete)
 	if ($filtro_seleccionado !== '')
 	{
-		$stmt = $pdo->query("SELECT * FROM `$tabla_actual` 
-			WHERE id_session in (select id from B_session where version = '$filtro_seleccionado') 
-			ORDER BY id DESC LIMIT 5000");
+		try
+		{
+			$stmt = $pdo->query("SELECT * FROM `$tabla_actual` 
+				WHERE id_session in (select id from B_session where version = '$filtro_seleccionado') 
+				ORDER BY id DESC LIMIT 5000");
+		}
+		catch (PDOException $e)
+		{
+			$stmt = $pdo->query("SELECT * FROM `$tabla_actual` ORDER BY id DESC LIMIT 5000");
+		}
 	}
 	else
 	{
