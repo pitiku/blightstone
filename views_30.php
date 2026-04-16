@@ -36,7 +36,7 @@ try {
 	if ($filtro_seleccionado !== '')
 	{
 		$stmt = $pdo->query("SELECT * FROM `$tabla_actual` 
-			WHERE id_session in (select id from BS.B_session where version = '$filtro_seleccionado') 
+			WHERE id_session in (select id from B_session where version = '$filtro_seleccionado') 
 			ORDER BY id DESC LIMIT 5000");
 	}
 	else
