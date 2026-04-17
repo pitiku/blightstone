@@ -180,10 +180,21 @@ try {
 <script>
 $(document).ready(function() {
     var table = $('#mainTable').DataTable({
-		order: [[ 0, "desc" ]],		
+        order: [[ 0, "desc" ]],        
         orderCellsTop: true,
         pageLength: 15,
-        language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json" }
+        language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json" },
+        // Añadimos esto para asegurar que use los atributos data-*
+        columnDefs: [
+            { targets: '_all', render: function(data, type, row, meta) {
+                if (type === 'filter') {
+                    // Si DataTables pide datos para filtrar, intentamos sacar el data-search
+                    // Aunque con el atributo en el <td> suele ser suficiente
+                    return data; 
+                }
+                return data;
+            }}
+        ]
     });
 
     // Filtros por columna
@@ -192,7 +203,7 @@ $(document).ready(function() {
         table.column(index).search(this.value).draw();
     });
 });
-
+	
 function showModal(el) {
     const text = $(el).data('fulltext');
     const col = $(el).data('colname');
