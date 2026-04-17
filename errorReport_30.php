@@ -25,7 +25,7 @@ try {
 	//$sQuery = "SELECT DISTINCT(version) from b_session
 	//								UNION
 	//							SELECT DISTINCT(version) from z_errorsUnique";
-	$sQuery = " DISTINCT(version) from z_errorsUnique ORDER BY version desc";
+	$sQuery = "SELECT DISTINCT(version) from z_errorsUnique ORDER BY version desc";
     $stmt_opciones = $pdo->query(sQuery);
     $opciones = $stmt_opciones->fetchAll(PDO::FETCH_COLUMN);
 
