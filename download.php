@@ -10,7 +10,7 @@ if (!isset($_GET['t'], $_GET['c'], $_GET['pk'], $_GET['id'])) {
 $host = 'gateway01.eu-central-1.prod.aws.tidbcloud.com';
 $user = '2p7TUipr1WHHH3f.root';
 $pass = '5ZcNOCkyQA9VGvfL';
-$db   = 'BS';
+$db   = 'BS_30';
 $dsn = "mysql:host=$host;dbname=$db;port=4000;charset=utf8mb4";
 
 try {
