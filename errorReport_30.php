@@ -26,7 +26,7 @@ try {
 	//								UNION
 	//							SELECT DISTINCT(version) from z_errorsUnique";
 	$sQuery = "SELECT DISTINCT(version) from z_errorsUnique ORDER BY version desc";
-    $stmt_opciones = $pdo->query(sQuery);
+    $stmt_opciones = $pdo->query($sQuery);
     $opciones = $stmt_opciones->fetchAll(PDO::FETCH_COLUMN);
 
     // 2. Capturar el valor seleccionado del formulario
