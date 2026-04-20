@@ -139,7 +139,7 @@ try {
 <?php foreach ($fila as $col_name => $valor): ?>
     <?php $valor_limpio = $valor ?? ''; ?>
     <td data-search="<?= htmlspecialchars($valor_limpio) ?>"> <?php if (stripos($col_name, 'save') !== false && !empty($valor)): ?>
-            <a href="download.php?t=<?= urlencode($tabla_actual) ?>&c=<?= urlencode($col_name) ?>&pk=<?= urlencode($pk_name) ?>&id=<?= urlencode($fila[$pk_name]) ?>" 
+            <a href="download_editor.php?t=<?= urlencode($tabla_actual) ?>&c=<?= urlencode($col_name) ?>&pk=<?= urlencode($pk_name) ?>&id=<?= urlencode($fila[$pk_name]) ?>" 
                class="btn btn-primary btn-sm px-2 py-0">📥 Descargar</a>
         <?php else: ?>
             <div class="clickable-cell" 
