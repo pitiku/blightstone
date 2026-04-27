@@ -29,9 +29,9 @@
 			try
 			{
 				$sql = "SELECT
-				(SELECT count(*) from b_session where version = 'V0.3.3 (sam0.8.033.4647[792f93348])' and id not in (SELECT id_session from z_errorsUnique where version = 'V0.3.3 (sam0.8.033.4647[792f93348])'))
+				(SELECT count(*) from b_session where version = '$version' and id not in (SELECT id_session from z_errorsUnique where version = '$version'))
 				/
-				(SELECT count(*) from b_session where version = 'V0.3.3 (sam0.8.033.4647[792f93348])')";
+				(SELECT count(*) from b_session where version = '$version')";
 
 				$stmt = $pdo->query($sql);
 				$datos = $stmt->fetchAll();
