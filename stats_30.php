@@ -17,7 +17,7 @@
 		$pdo = new PDO($dsn, $user, $pass, $options);
 
 		// 0. Obtener las versiones para el filtro
-		$stmt_opciones = $pdo->query("SELECT DISTINCT $columna_filtro FROM B_session ORDER BY version ASC");
+		$stmt_opciones = $pdo->query("SELECT DISTINCT version FROM B_session ORDER BY version ASC");
 		$opciones = $stmt_opciones->fetchAll(PDO::FETCH_COLUMN);
 
 		// 0.1. Capturar el valor seleccionado del formulario
